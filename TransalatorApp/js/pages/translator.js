@@ -4,7 +4,7 @@ import { config } from '../config.js';
 export class TranslatorPage {
     constructor() {
         this.initializeElements();
-        this.attachEventListeners();
+        this.setupEventListeners();
         this.checkApiKey();
     }
 
@@ -16,6 +16,13 @@ export class TranslatorPage {
         this.toLanguage = document.getElementById('toLanguage');
         this.formalityLevel = document.getElementById('formalityLevel');
         this.detailedMode = document.getElementById('detailedMode');
+        this.outputSection = document.querySelector('.output-section');
+        this.detailedToggle = document.querySelector('#detailedToggle');
+        this.formalityButton = document.querySelector('#formalityButton');
+        this.formalityModal = document.querySelector('.formality-modal');
+        this.formalityModalClose = document.querySelector('.formality-modal-close');
+        this.formalityOptions = document.querySelectorAll('.formality-option');
+        this.formalityLabel = document.querySelector('.formality-label');
 
         // API Configuration
         this.API_URL = 'https://api.openai.com/v1/chat/completions';
@@ -27,6 +34,30 @@ export class TranslatorPage {
             'formal-polite': 'formal polite speech level',
             'very-formal': 'very formal and respectful speech level'
         };
+    }
+
+    setupEventListeners() {
+        // Translation events
+        this.sendButton.addEventListener('click', () => this.handleTranslate());
+        this.userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Prevent new line
+                this.handleTranslate();
+            }
+        });
+
+        // Formality modal events
+        this.formalityButton.addEventListener('click', () => this.openFormalityModal());
+        this.formalityModalClose.addEventListener('click', () => this.closeFormalityModal());
+        this.formalityModal.querySelector('.formality-modal-overlay').addEventListener('click', () => this.closeFormalityModal());
+
+        this.formalityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.dataset.value;
+                this.updateFormalitySelection(value);
+                this.closeFormalityModal();
+            });
+        });
     }
 
     checkApiKey() {
@@ -57,16 +88,6 @@ export class TranslatorPage {
             config.setApiKey(apiKey);
             this.checkApiKey();
         }
-    }
-
-    attachEventListeners() {
-        this.sendButton.addEventListener('click', () => this.handleTranslate());
-        this.userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent new line
-                this.handleTranslate();
-            }
-        });
     }
 
     addMessage(originalText, translatedText, explanation = null, isUser = false) {
@@ -245,5 +266,28 @@ export class TranslatorPage {
         
         // Add translation
         this.addMessage(null, result.translation, result.explanation, false);
+    }
+
+    openFormalityModal() {
+        this.formalityModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Update active state
+        const currentValue = this.formalityLevel.value;
+        this.formalityOptions.forEach(option => {
+            option.classList.toggle('active', option.dataset.value === currentValue);
+        });
+    }
+
+    closeFormalityModal() {
+        this.formalityModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    updateFormalitySelection(value) {
+        this.formalityLevel.value = value;
+        const selectedOption = Array.from(this.formalityLevel.options)
+            .find(option => option.value === value);
+        this.formalityLabel.textContent = selectedOption.textContent;
     }
 } 

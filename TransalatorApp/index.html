@@ -18,25 +18,6 @@
                         <div class="language-arrow">→</div>
                         <div class="language">Korean</div>
                     </div>
-                    <div class="controls-group">
-                        <div class="toggle-container">
-                            <label class="toggle-label" for="detailedMode">
-                                <span>Detailed</span>
-                                <div class="toggle-switch">
-                                    <input type="checkbox" id="detailedMode">
-                                    <span class="toggle-slider"></span>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="formality-selector">
-                            <select id="formalityLevel">
-                                <option value="casual">Casual / Informal</option>
-                                <option value="polite-informal">Polite Informal</option>
-                                <option value="formal-polite">Formal Polite</option>
-                                <option value="very-formal">Very Formal & Respectful</option>
-                            </select>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="translation-area">
@@ -48,15 +29,42 @@
                 <div class="input-container">
                     <div class="input-section">
                         <textarea id="userInput" placeholder="Enter English text to translate..." rows="3"></textarea>
-                    </div>
-                    <div class="action-bar">
-                        <button id="sendButton">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="22" y1="2" x2="11" y2="13"></line>
-                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                            </svg>
-                            Translate
-                        </button>
+                        <div class="input-controls">
+                            <div class="controls-group">
+                                <div class="toggle-container">
+                                    <label class="toggle-label" for="detailedMode">
+                                        <span>Detailed</span>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="detailedMode">
+                                            <span class="toggle-slider"></span>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="formality-selector">
+                                    <button type="button" id="formalityButton" class="formality-button">
+                                        <span class="formality-label">Casual</span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="4" y1="8" x2="20" y2="8"></line>
+                                            <line x1="4" y1="16" x2="20" y2="16"></line>
+                                            <circle cx="8" cy="8" r="2"></circle>
+                                            <circle cx="16" cy="16" r="2"></circle>
+                                        </svg>
+                                    </button>
+                                    <select id="formalityLevel" class="formality-select-hidden">
+                                        <option value="casual">Casual</option>
+                                        <option value="polite-informal">Polite</option>
+                                        <option value="formal-polite">Formal</option>
+                                        <option value="very-formal">Very Formal</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="sendButton">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -135,6 +143,38 @@
                     Settings
                 </button>
             </nav>
+        </div>
+    </div>
+    <div class="formality-modal">
+        <div class="formality-modal-overlay"></div>
+        <div class="formality-modal-content">
+            <div class="formality-modal-header">
+                <h3>Select Formality</h3>
+                <button class="formality-modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="formality-modal-options">
+                <button class="formality-option" data-value="casual">
+                    <span class="formality-option-label">Casual</span>
+                    <span class="formality-option-description">For friends and family</span>
+                </button>
+                <button class="formality-option" data-value="polite-informal">
+                    <span class="formality-option-label">Polite</span>
+                    <span class="formality-option-description">For acquaintances and colleagues</span>
+                </button>
+                <button class="formality-option" data-value="formal-polite">
+                    <span class="formality-option-label">Formal</span>
+                    <span class="formality-option-description">For business and professional settings</span>
+                </button>
+                <button class="formality-option" data-value="very-formal">
+                    <span class="formality-option-label">Very Formal</span>
+                    <span class="formality-option-description">For highly respectful situations</span>
+                </button>
+            </div>
         </div>
     </div>
     <script type="module" src="js/app.js"></script>
