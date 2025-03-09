@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Translator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <div class="translator-container">
+            <!-- Translation View -->
+            <div id="translationView" class="view active">
+                <div class="language-bar">
+                    <div class="language-pair">
+                        <div class="language active">English</div>
+                        <div class="language-arrow">→</div>
+                        <div class="language">Korean</div>
+                    </div>
+                    <div class="controls-group">
+                        <div class="toggle-container">
+                            <label class="toggle-label" for="detailedMode">
+                                <span>Detailed</span>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="detailedMode">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="formality-selector">
+                            <select id="formalityLevel">
+                                <option value="casual">Casual / Informal</option>
+                                <option value="polite-informal">Polite Informal</option>
+                                <option value="formal-polite">Formal Polite</option>
+                                <option value="very-formal">Very Formal & Respectful</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="translation-area">
+                    <div class="output-section" id="chatBox">
+                        <!-- Translations will appear here -->
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <div class="input-section">
+                        <textarea id="userInput" placeholder="Enter English text to translate..." rows="3"></textarea>
+                    </div>
+                    <div class="action-bar">
+                        <button id="sendButton">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                            Translate
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Word Bank View -->
+            <div id="wordBankView" class="view">
+                <div class="word-bank-placeholder">
+                    <h2>Word Bank</h2>
+                    <p>Coming soon...</p>
+                </div>
+            </div>
+
+            <!-- Navigation Bar -->
+            <nav class="nav-bar">
+                <button class="nav-button active" data-view="translationView">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    Translate
+                </button>
+                <button class="nav-button" data-view="wordBankView">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    Word Bank
+                </button>
+            </nav>
+        </div>
+    </div>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html> 
