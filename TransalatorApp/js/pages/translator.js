@@ -1,8 +1,11 @@
+import { config } from '../config.js';
+
 // Translator page functionality
 export class TranslatorPage {
     constructor() {
         this.initializeElements();
         this.attachEventListeners();
+        this.checkApiKey();
     }
 
     initializeElements() {
@@ -15,7 +18,6 @@ export class TranslatorPage {
         this.detailedMode = document.getElementById('detailedMode');
 
         // API Configuration
-        this.API_KEY = OPENAI_API_KEY; // This will be replaced during build
         this.API_URL = 'https://api.openai.com/v1/chat/completions';
 
         // Formality level descriptions
@@ -25,6 +27,36 @@ export class TranslatorPage {
             'formal-polite': 'formal polite speech level',
             'very-formal': 'very formal and respectful speech level'
         };
+    }
+
+    checkApiKey() {
+        try {
+            config.getApiKey();
+            this.enableTranslation();
+        } catch (error) {
+            this.disableTranslation();
+            this.showApiKeyPrompt();
+        }
+    }
+
+    enableTranslation() {
+        this.sendButton.disabled = false;
+        this.userInput.disabled = false;
+        this.userInput.placeholder = "Enter English text to translate...";
+    }
+
+    disableTranslation() {
+        this.sendButton.disabled = true;
+        this.userInput.disabled = true;
+        this.userInput.placeholder = "Please set your API key to start translating...";
+    }
+
+    showApiKeyPrompt() {
+        const apiKey = prompt("Please enter your OpenAI API key to use the translator:");
+        if (apiKey) {
+            config.setApiKey(apiKey);
+            this.checkApiKey();
+        }
     }
 
     attachEventListeners() {
@@ -116,19 +148,14 @@ export class TranslatorPage {
                            {"type": "Grammar Points", "explanation": "Explain any notable grammar structures used"},
                            {"type": "Cultural Notes", "explanation": "Add relevant cultural context if applicable"}
                        ]
-                   }
-                   Important: 
-                   - Only return the JSON object, no additional text before or after
-                   - Only include Grammar Points and Cultural Notes if there are relevant points to explain
-                   - If there are no grammar points or cultural notes to explain, omit those sections entirely
-                   - Always include Key Phrases section with at least one key phrase`
+                   }`
                 : `You are a professional Korean translator. Translate the text from English to Korean using ${this.formalityDescriptions[formality]}. Only provide the Korean translation without any additional explanation or notes.`;
 
             const response = await fetch(this.API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.API_KEY}`
+                    'Authorization': `Bearer ${config.getApiKey()}`
                 },
                 body: JSON.stringify({
                     model: "gpt-3.5-turbo",
@@ -142,6 +169,11 @@ export class TranslatorPage {
                     }]
                 })
             });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'API request failed');
+            }
 
             const data = await response.json();
             const content = data.choices[0].message.content;

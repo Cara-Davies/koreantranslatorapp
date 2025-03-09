@@ -69,6 +69,57 @@
                 </div>
             </div>
 
+            <!-- Settings View -->
+            <div id="settingsView" class="view">
+                <div class="settings-container">
+                    <section class="settings-section">
+                        <h3>Appearance</h3>
+                        <div class="mode-toggle">
+                            <label class="toggle-label" for="darkMode">
+                                <span>Dark Mode</span>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="darkMode">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
+                    <section class="settings-section">
+                        <h3>Theme</h3>
+                        <div class="theme-grid">
+                            <button class="theme-option" data-theme="blue">
+                                <span class="color-circle" style="background-color: #007AFF;"></span>
+                                Blue
+                            </button>
+                            <button class="theme-option" data-theme="pink">
+                                <span class="color-circle" style="background-color: #FF2D55;"></span>
+                                Pink
+                            </button>
+                            <button class="theme-option" data-theme="purple">
+                                <span class="color-circle" style="background-color: #AF52DE;"></span>
+                                Purple
+                            </button>
+                            <button class="theme-option" data-theme="green">
+                                <span class="color-circle" style="background-color: #34C759;"></span>
+                                Green
+                            </button>
+                            <button class="theme-option" data-theme="orange">
+                                <span class="color-circle" style="background-color: #FF9500;"></span>
+                                Orange
+                            </button>
+                        </div>
+                    </section>
+                    <section class="settings-section">
+                        <h3>API Key</h3>
+                        <div class="api-key-input">
+                            <input type="password" id="apiKeyInput" placeholder="Enter your OpenAI API key">
+                            <button id="saveApiKey" class="save-button">Save</button>
+                        </div>
+                        <p class="api-key-status">API key is currently set and working correctly.</p>
+                    </section>
+                </div>
+            </div>
+
             <!-- Navigation Bar -->
             <nav class="nav-bar">
                 <button class="nav-button active" data-view="translationView">
@@ -83,6 +134,13 @@
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
                     Word Bank
+                </button>
+                <button class="nav-button" data-view="settingsView">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    Settings
                 </button>
             </nav>
         </div>

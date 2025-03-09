@@ -1,10 +1,12 @@
 import { TranslatorPage } from './pages/translator.js';
 import { WordBankPage } from './pages/wordbank.js';
+import { ThemeManager } from './theme.js';
 
 export class App {
     constructor() {
         this.initializeNavigation();
         this.initializePages();
+        this.themeManager = new ThemeManager();
     }
 
     initializeNavigation() {
