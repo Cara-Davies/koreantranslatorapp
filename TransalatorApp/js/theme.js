@@ -4,14 +4,11 @@ export class ThemeManager {
     constructor() {
         console.log('ThemeManager initializing...');
         this.themeOptions = document.querySelectorAll('.theme-option');
-        this.apiKeySection = document.querySelector('.settings-section:last-child');
-        this.apiKeyInput = document.getElementById('apiKeyInput');
-        this.saveApiKeyButton = document.getElementById('saveApiKey');
         this.darkModeToggle = document.getElementById('darkMode');
         this.currentTheme = localStorage.getItem('theme') || 'blue';
         this.isDarkMode = localStorage.getItem('darkMode') === 'true';
         
-        if (!this.themeOptions || !this.darkModeToggle || !this.apiKeyInput || !this.saveApiKeyButton) {
+        if (!this.themeOptions || !this.darkModeToggle) {
             console.error('Required elements not found!');
             return;
         }
@@ -19,7 +16,6 @@ export class ThemeManager {
         this.initializeTheme();
         this.initializeDarkMode();
         this.setupEventListeners();
-        this.updateApiKeyVisibility();
     }
 
     initializeTheme() {
@@ -42,25 +38,6 @@ export class ThemeManager {
         }
         this.isDarkMode = isDark;
         localStorage.setItem('darkMode', isDark);
-    }
-
-    updateApiKeyVisibility() {
-        try {
-            const apiKey = config.getApiKey();
-            // If we get here, API key exists
-            if (this.apiKeySection) {
-                this.apiKeySection.classList.add('api-key-set');
-                this.apiKeyInput.style.display = 'none';
-                this.saveApiKeyButton.style.display = 'none';
-            }
-        } catch {
-            // No API key, show the input
-            if (this.apiKeySection) {
-                this.apiKeySection.classList.remove('api-key-set');
-                this.apiKeyInput.style.display = 'block';
-                this.saveApiKeyButton.style.display = 'block';
-            }
-        }
     }
 
     updateActiveTheme() {
@@ -89,18 +66,6 @@ export class ThemeManager {
                 this.updateActiveTheme();
             });
         });
-
-        // Save API key
-        if (this.saveApiKeyButton && this.apiKeyInput) {
-            this.saveApiKeyButton.addEventListener('click', () => {
-                const apiKey = this.apiKeyInput.value.trim();
-                if (apiKey) {
-                    config.setApiKey(apiKey);
-                    this.apiKeyInput.value = '';
-                    this.updateApiKeyVisibility();
-                }
-            });
-        }
         
         console.log('Event listeners set up successfully');
     }
