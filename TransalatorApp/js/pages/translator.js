@@ -7,6 +7,7 @@ export class TranslatorPage {
         this.initializeElements();
         this.setupEventListeners();
         this.checkApiKey();
+        this.maxDetailedRetries = 3; // Maximum number of retries for detailed explanations
     }
 
     initializeElements() {
@@ -105,9 +106,22 @@ export class TranslatorPage {
             if (explanation && Array.isArray(explanation) && explanation.length > 0 && this.detailedMode.checked) {
                 const validExplanations = explanation.filter(item => {
                     if (!item || !item.type || !item.explanation) return false;
-                    if (Array.isArray(item.explanation)) {
-                        return item.explanation.length > 0 && item.explanation.some(exp => exp && exp.trim() !== '');
+                    
+                    // Handle Grammar Points type
+                    if (item.type === 'Grammar Points') {
+                        return Array.isArray(item.explanation) &&
+                               item.explanation.length >= 2 &&
+                               item.explanation.some(exp => exp.category === "Tense and Aspect" && exp.details?.trim()) &&
+                               item.explanation.some(exp => exp.category === "Particles" && exp.details?.trim());
                     }
+                    
+                    // Handle array-type explanations (like Key Phrases)
+                    if (Array.isArray(item.explanation)) {
+                        return item.explanation.length > 0 && 
+                               item.explanation.some(exp => typeof exp === 'string' && exp.trim() !== '');
+                    }
+                    
+                    // Handle string-type explanations (like Cultural Notes)
                     return typeof item.explanation === 'string' && item.explanation.trim() !== '';
                 });
 
@@ -152,8 +166,32 @@ export class TranslatorPage {
                                             <p>${item.explanation}</p>
                                         </div>
                                     `;
+                                } else if (item.type === 'Grammar Points') {
+                                    // Handle structured grammar points
+                                    if (!Array.isArray(item.explanation)) return '';
+                                    
+                                    const validPoints = item.explanation.filter(point => 
+                                        point && point.category && point.details && 
+                                        typeof point.details === 'string' && 
+                                        point.details.trim() !== ''
+                                    );
+                                    
+                                    if (validPoints.length === 0) return '';
+                                    
+                                    return `
+                                        <div class="explanation-item">
+                                            <strong>${item.type}:</strong>
+                                            <ul class="phrase-list">
+                                                ${validPoints.map(point => `
+                                                    <li>
+                                                        <span class="korean">${point.category}</span>: ${point.details}
+                                                    </li>
+                                                `).join('')}
+                                            </ul>
+                                        </div>
+                                    `;
                                 } else {
-                                    // Handle other types (Grammar Points, Cultural Notes)
+                                    // Handle other types (Cultural Notes)
                                     return `
                                         <div class="explanation-item">
                                             <strong>${item.type}:</strong>
@@ -182,6 +220,7 @@ export class TranslatorPage {
         try {
             const formality = this.formalityLevel.value;
             const isDetailed = this.detailedMode.checked;
+            let retryCount = 0;
             
             // Enhanced formality descriptions with more specific instructions
             const formalityInstructions = {
@@ -190,9 +229,19 @@ export class TranslatorPage {
                 'formal-polite': 'Use the formal polite speech level (합쇼체) suitable for business and professional settings. End sentences with 습니다/ㅂ니다.',
                 'very-formal': 'Use the most formal and respectful speech level with appropriate honorifics for highly formal situations or when addressing seniors or authority figures.'
             };
-            
-            const systemPrompt = isDetailed 
-                ? `You are a professional Korean translator and language expert specializing in maintaining consistent speech levels. ${formalityInstructions[formality]}
+
+            const getSystemPrompt = (isDetailed, retryAttempt = 0) => {
+                if (!isDetailed) {
+                    return `You are a professional Korean translator specializing in maintaining consistent speech levels. ${formalityInstructions[formality]} Only provide the Korean translation without any additional explanation or notes.`;
+                }
+
+                let retryEmphasis = '';
+                if (retryAttempt > 0) {
+                    retryEmphasis = `IMPORTANT: Previous response did not include sufficient detailed explanations. Please ensure to provide comprehensive explanations for ALL aspects of the translation including grammar points (with tense and particle analysis), cultural context, and key phrases. This is attempt ${retryAttempt + 1} of ${this.maxDetailedRetries}.`;
+                }
+
+                return `You are a professional Korean translator and language expert specializing in maintaining consistent speech levels. ${formalityInstructions[formality]}
+                   ${retryEmphasis}
                    
                    Return your response in this exact JSON format without any additional text:
                    {
@@ -205,92 +254,139 @@ export class TranslatorPage {
                                    "Korean Word/Phrase 2 (English meaning) - Additional context or usage notes"
                                ]
                            },
-                           {"type": "Grammar Points", "explanation": "Explain any notable grammar structures used and how the speech level is maintained"},
+                           {
+                               "type": "Grammar Points",
+                               "explanation": [
+                                   {
+                                       "category": "Tense and Aspect",
+                                       "details": "Explain the tense used (past/present/future), any aspect markers (progressive, completed action, etc.)"
+                                   },
+                                   {
+                                       "category": "Particles",
+                                       "details": "List and explain all particles used (topic markers, subject markers, object markers, etc.) and their functions"
+                                   },
+                                   {
+                                       "category": "Sentence Structure",
+                                       "details": "Explain how the speech level is maintained and any other notable grammar patterns"
+                                   }
+                               ]
+                           },
                            {"type": "Cultural Notes", "explanation": "Add relevant cultural context if applicable"}
                        ]
-                   }`
-                : `You are a professional Korean translator specializing in maintaining consistent speech levels. ${formalityInstructions[formality]} Only provide the Korean translation without any additional explanation or notes.`;
+                   }`;
+            };
 
-            const response = await fetch(this.API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${config.getApiKey()}`
-                },
-                body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [{
-                        role: "system",
-                        content: systemPrompt
+            const makeTranslationRequest = async (retryAttempt = 0) => {
+                const response = await fetch(this.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${config.getApiKey()}`
                     },
-                    {
-                        role: "user",
-                        content: text
-                    }]
-                })
-            });
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{
+                            role: "system",
+                            content: getSystemPrompt(isDetailed, retryAttempt)
+                        },
+                        {
+                            role: "user",
+                            content: text
+                        }]
+                    })
+                });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error?.message || 'API request failed');
-            }
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'API request failed');
+                }
 
-            const data = await response.json();
-            const content = data.choices[0].message.content;
+                return await response.json();
+            };
 
-            if (isDetailed) {
-                try {
-                    // Try to find and parse only the JSON part
-                    const jsonMatch = content.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        const parsedResponse = JSON.parse(jsonMatch[0]);
-                        // Filter out any sections with empty explanations
-                        if (parsedResponse.explanation) {
-                            parsedResponse.explanation = parsedResponse.explanation.filter(item => 
-                                item.explanation && 
-                                (Array.isArray(item.explanation) ? item.explanation.length > 0 : item.explanation.trim() !== '')
-                            );
+            let translationResult;
+            let parsedResponse;
+
+            do {
+                const data = await makeTranslationRequest(retryCount);
+                const content = data.choices[0].message.content;
+
+                if (isDetailed) {
+                    try {
+                        const jsonMatch = content.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            parsedResponse = JSON.parse(jsonMatch[0]);
                             
-                            // If all explanations were filtered out, return a specific error
-                            if (parsedResponse.explanation.length === 0) {
-                                return {
-                                    translation: parsedResponse.translation,
-                                    explanation: [{
-                                        type: "Note",
-                                        explanation: "No detailed explanations were provided for this translation. This might happen with very simple phrases or when the model doesn't detect any notable grammar points or cultural context to explain."
-                                    }]
-                                };
+                            // Check if we have sufficient explanations
+                            const hasValidExplanations = parsedResponse.explanation?.some(item => {
+                                if (!item.explanation) return false;
+                                
+                                if (item.type === "Grammar Points") {
+                                    // For Grammar Points, check if we have detailed tense and particle information
+                                    return Array.isArray(item.explanation) && 
+                                           item.explanation.length >= 2 && // At least tense and particle information
+                                           item.explanation.some(exp => exp.category === "Tense and Aspect" && exp.details?.trim()) &&
+                                           item.explanation.some(exp => exp.category === "Particles" && exp.details?.trim());
+                                }
+                                
+                                // For array-type explanations (like Key Phrases)
+                                if (Array.isArray(item.explanation)) {
+                                    return item.explanation.length > 0 && 
+                                           item.explanation.some(exp => typeof exp === 'string' && exp.trim() !== '');
+                                }
+                                
+                                // For string-type explanations (like Cultural Notes)
+                                return typeof item.explanation === 'string' && item.explanation.trim() !== '';
+                            });
+
+                            if (hasValidExplanations) {
+                                // Filter out empty explanations
+                                parsedResponse.explanation = parsedResponse.explanation.filter(item => {
+                                    if (!item.explanation) return false;
+                                    
+                                    if (item.type === "Grammar Points") {
+                                        return Array.isArray(item.explanation) &&
+                                               item.explanation.length >= 2 &&
+                                               item.explanation.some(exp => exp.category === "Tense and Aspect" && exp.details?.trim()) &&
+                                               item.explanation.some(exp => exp.category === "Particles" && exp.details?.trim());
+                                    }
+                                    
+                                    if (Array.isArray(item.explanation)) {
+                                        return item.explanation.length > 0 &&
+                                               item.explanation.some(exp => typeof exp === 'string' && exp.trim() !== '');
+                                    }
+                                    
+                                    return typeof item.explanation === 'string' && item.explanation.trim() !== '';
+                                });
+                                translationResult = parsedResponse;
+                                break;
                             }
-                        } else {
-                            // If no explanation array was provided
-                            return {
-                                translation: parsedResponse.translation,
-                                explanation: [{
-                                    type: "Note",
-                                    explanation: "The translation was successful, but detailed explanations could not be generated. Try rephrasing your text or check if it's complex enough to warrant detailed explanations."
-                                }]
-                            };
                         }
-                        return parsedResponse;
-                    } else {
-                        throw new Error('No valid JSON found in response');
+                    } catch (e) {
+                        console.error('JSON parsing error on attempt ${retryCount + 1}:', e);
                     }
-                } catch (e) {
-                    console.error('JSON parsing error:', e);
+
+                    retryCount++;
+                    if (retryCount >= this.maxDetailedRetries) {
+                        // If all retries failed, return the last response with an error note
+                        return {
+                            translation: parsedResponse?.translation || content,
+                            explanation: [{
+                                type: "Error",
+                                explanation: `Unable to generate detailed explanations after ${this.maxDetailedRetries} attempts. The translation is shown above, but detailed explanations could not be generated.`
+                            }]
+                        };
+                    }
+                } else {
                     return {
                         translation: content,
-                        explanation: [{
-                            type: "Error",
-                            explanation: "There was an issue generating detailed explanations. The translation is shown above, but detailed mode may not work with this input."
-                        }]
+                        explanation: null
                     };
                 }
-            } else {
-                return {
-                    translation: content,
-                    explanation: null
-                };
-            }
+            } while (isDetailed && retryCount < this.maxDetailedRetries);
+
+            return translationResult;
+
         } catch (error) {
             console.error('Error:', error);
             return {
