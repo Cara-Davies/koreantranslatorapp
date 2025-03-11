@@ -62,10 +62,12 @@ export async function translationToWords(englishText, formality = 'polite-inform
             };
 
             wordPairs.forEach(pair => {
-                result.words[pair.english] = {
-                    korean: pair.korean,
-                    notes: pair.notes
-                };
+                if (pair.korean !== '?') { // Only store valid translations
+                    result.words[pair.english] = {
+                        korean: pair.korean,
+                        notes: pair.notes
+                    };
+                }
             });
 
             console.log('Translation mapping:', result);

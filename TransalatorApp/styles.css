@@ -13,6 +13,9 @@
     --select-background: #f5f5f7;
     --nav-background: #ffffff;
     --primary-rgb: 0, 122, 255;
+    --button-primary: #007AFF;
+    --button-text: #ffffff;
+    --button-primary-hover: #005BB5;
 }
 
 /* Dark mode */
@@ -27,6 +30,9 @@
     --input-background: #1c1c1e;
     --select-background: #1c1c1e;
     --nav-background: #2c2c2e;
+    --button-primary-dark: #005BB5;
+    --button-text-dark: #ffffff;
+    --button-primary-hover-dark: #003E7E;
 }
 
 /* Theme variations */
@@ -1419,4 +1425,133 @@ input:checked + .toggle-slider:before {
 .version-info .deploy-time {
     font-size: 0.85em;
     opacity: 0.8;
+}
+
+/* Word Bank Empty State Styles */
+.empty-word-bank {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-primary);
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+.empty-word-bank h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.empty-word-bank p {
+    font-size: 1em;
+    margin-bottom: 20px;
+}
+
+.start-translating-button {
+    background-color: var(--primary-color);
+    color: var(--button-text);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.start-translating-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    background-color: var(--primary-light);
+}
+
+/* Dark Mode Adjustments */
+[data-mode="dark"] .empty-word-bank {
+    color: var(--text-primary-dark);
+    background-color: var(--background-secondary-dark);
+}
+
+[data-mode="dark"] .start-translating-button {
+    background-color: var(--primary-color);
+    color: var(--button-text-dark);
+}
+
+[data-mode="dark"] .start-translating-button:hover {
+    background-color: var(--primary-light);
+}
+
+/* Word Table Styles */
+.word-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.word-table th, .word-table td {
+    border: 1px solid var(--border);
+    padding: 10px;
+    text-align: left;
+    color: var(--text-primary);
+}
+
+.word-table th {
+    background-color: var(--surface);
+    font-weight: 600;
+}
+
+.word-table tr:nth-child(even) {
+    background-color: var(--background);
+}
+
+/* Dark Mode Adjustments */
+[data-mode="dark"] .word-table th {
+    background-color: var(--surface);
+}
+
+[data-mode="dark"] .word-table tr:nth-child(even) {
+    background-color: var(--surface);
+}
+
+/* Word Tile Styles */
+.word-tile {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.word-english {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.word-formality {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+/* Dark Mode Adjustments */
+[data-mode="dark"] .word-tile {
+    background-color: var(--surface);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+/* Word Tile Grid Styles */
+.word-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 767px) {
+    .word-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
 } 

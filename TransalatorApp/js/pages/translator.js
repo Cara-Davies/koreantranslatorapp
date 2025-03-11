@@ -1,5 +1,6 @@
 import { config } from '../config.js';
 import { translationToWords } from '../utils/translationUtils.js';
+import { WordStorageManager } from '../utils/wordStorageManager.js';
 
 // Translator page functionality
 export class TranslatorPage {
@@ -8,6 +9,7 @@ export class TranslatorPage {
         this.setupEventListeners();
         this.checkApiKey();
         this.maxDetailedRetries = 3; // Maximum number of retries for detailed explanations
+        this.wordStorage = new WordStorageManager(); // Initialize word storage
     }
 
     initializeElements() {
@@ -435,6 +437,11 @@ export class TranslatorPage {
             
             // Get word-by-word translations with formality level
             const wordPairs = await translationToWords(text, this.formalityLevel.value);
+            
+            // Save translated words to storage
+            if (wordPairs && wordPairs.words) {
+                this.wordStorage.saveWords(wordPairs, this.formalityLevel.value);
+            }
 
             // Add translation to chat
             this.addMessage(text, translation, explanation);

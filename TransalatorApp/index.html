@@ -100,27 +100,12 @@
                     <h1>Word Bank</h1>
                 </div>
                 <div class="word-bank-content">
-                    <div class="word-bank-placeholder">
-                        <h2>Coming soon: Your Personal Korean Word Library!</h2>
-                        <div class="feature-list">
-                            <h3>The Word Bank will allow you to:</h3>
-                            <ul>
-                                <li>Search through all your translated words</li>
-                                <li>See Korean translations and formality levels</li>
-                                <li>Group your words by word type or formality</li>
-                                <li>Create custom word lists for practice</li>
-                            </ul>
-                            <p class="note">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-                                    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-                                    <path d="M2 2l7.586 7.586"></path>
-                                    <circle cx="11" cy="11" r="2"></circle>
-                                </svg>
-                                Stay tuned for this exciting feature!
-                            </p>
-                        </div>
+                    <div id="emptyWordBank" class="empty-word-bank">
+                        <h2>You have not yet translated any words.</h2>
+                        <p>As you translate words, they will appear here.</p>
+                        <button id="startTranslatingButton" class="start-translating-button">Start Translating</button>
                     </div>
+                    <div id="wordList" class="word-list" style="display: none;"></div>
                 </div>
             </div>
 
