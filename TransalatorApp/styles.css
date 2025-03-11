@@ -1404,4 +1404,19 @@ input:checked + .toggle-slider:before {
     .explanation-item.note {
         padding: 16px;
     }
+}
+
+.version-info {
+    padding: 10px 0;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+.version-info #versionNumber {
+    margin-bottom: 4px;
+}
+
+.version-info .deploy-time {
+    font-size: 0.85em;
+    opacity: 0.8;
 } 

@@ -16,6 +16,7 @@ export class ThemeManager {
         this.initializeTheme();
         this.initializeDarkMode();
         this.setupEventListeners();
+        this.fetchVersionInfo();
     }
 
     initializeTheme() {
@@ -79,5 +80,32 @@ export class ThemeManager {
         this.currentTheme = theme;
         localStorage.setItem('theme', theme);
         console.log('Theme applied and saved');
+    }
+
+    async fetchVersionInfo() {
+        try {
+            const response = await fetch('https://api.github.com/repos/Cara-Davies/koreantranslatorapp/commits/main');
+            if (!response.ok) {
+                throw new Error('Failed to fetch commit info');
+            }
+            const data = await response.json();
+            
+            const versionElement = document.getElementById('versionNumber');
+            const deployTimeElement = document.getElementById('deployTime');
+            
+            if (versionElement && deployTimeElement) {
+                const shortSha = data.sha.substring(0, 7);
+                const commitDate = new Date(data.commit.author.date);
+                
+                versionElement.textContent = `Version: ${shortSha}`;
+                deployTimeElement.textContent = `Deployed: ${commitDate.toLocaleString()}`;
+            }
+        } catch (error) {
+            console.error('Error fetching version info:', error);
+            const versionElement = document.getElementById('versionNumber');
+            if (versionElement) {
+                versionElement.textContent = 'Version info unavailable';
+            }
+        }
     }
 } 
