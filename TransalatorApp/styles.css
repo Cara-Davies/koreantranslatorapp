@@ -60,6 +60,12 @@
     --primary-rgb: 255, 149, 0;
 }
 
+[data-theme="yellow"] {
+    --primary-color: #FFD60A;
+    --primary-light: #fffbeb;
+    --primary-rgb: 255, 214, 10;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -1308,10 +1314,142 @@ input:checked + .toggle-slider:before {
     padding: 20px;
 }
 
-.word-bank-placeholder {
-    text-align: center;
+/* Word List Grid Layout */
+.word-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Word Tile Styles */
+.word-tile {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    transition: all 0.2s ease;
+}
+
+.word-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.word-english {
+    font-size: 1.25em;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Translations List Styles */
+.translations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.translation-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    padding: 8px 0;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 16px;
+}
+
+.translation-item::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+.translation-formality {
     color: var(--text-secondary);
-    font-size: 16px;
+    font-weight: 500;
+    margin-right: 4px;
+    font-size: 0.9em;
+}
+
+.translation-korean {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Empty State Styles */
+.empty-word-bank {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--surface);
+    border-radius: 12px;
+    margin: 20px;
+    border: 1px solid var(--border);
+}
+
+.empty-word-bank h2 {
+    color: var(--text-primary);
+    font-size: 1.5em;
+    margin-bottom: 16px;
+}
+
+.empty-word-bank p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.start-translating-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.start-translating-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+    .word-list {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .word-tile {
+        padding: 16px;
+    }
+
+    .empty-word-bank {
+        margin: 12px;
+        padding: 24px 16px;
+    }
+}
+
+/* Dark Mode Adjustments */
+[data-mode="dark"] .word-tile {
+    background-color: var(--surface);
+}
+
+[data-mode="dark"] .translation-korean {
+    color: var(--text-primary);
+}
+
+[data-mode="dark"] .translation-formality {
+    color: var(--text-secondary);
 }
 
 /* Loading Spinner Styles */
@@ -1427,59 +1565,6 @@ input:checked + .toggle-slider:before {
     opacity: 0.8;
 }
 
-/* Word Bank Empty State Styles */
-.empty-word-bank {
-    text-align: center;
-    padding: 20px;
-    color: var(--text-primary);
-    background-color: var(--background-secondary);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-}
-
-.empty-word-bank h2 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.empty-word-bank p {
-    font-size: 1em;
-    margin-bottom: 20px;
-}
-
-.start-translating-button {
-    background-color: var(--primary-color);
-    color: var(--button-text);
-    border: none;
-    padding: 10px 20px;
-    font-size: 1em;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.start-translating-button:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-    background-color: var(--primary-light);
-}
-
-/* Dark Mode Adjustments */
-[data-mode="dark"] .empty-word-bank {
-    color: var(--text-primary-dark);
-    background-color: var(--background-secondary-dark);
-}
-
-[data-mode="dark"] .start-translating-button {
-    background-color: var(--primary-color);
-    color: var(--button-text-dark);
-}
-
-[data-mode="dark"] .start-translating-button:hover {
-    background-color: var(--primary-light);
-}
-
 /* Word Table Styles */
 .word-table {
     width: 100%;
@@ -1554,4 +1639,34 @@ input:checked + .toggle-slider:before {
     .word-list {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
-} 
+}
+
+/* Word Tags Styles */
+.word-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.word-tag {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+[data-mode="dark"] .word-tag {
+    background-color: rgba(var(--primary-rgb), 0.15);
+}
+
+/* Remove the old spacing rule since tags are now below */
+/* .word-tags + .translations-list {
+    margin-top: 12px;
+} */ 

@@ -7,6 +7,7 @@ export class TranslatorPage {
     constructor() {
         this.initializeElements();
         this.setupEventListeners();
+        this.loadSavedPreferences(); // Load saved preferences before other initializations
         this.checkApiKey();
         this.maxDetailedRetries = 3; // Maximum number of retries for detailed explanations
         this.wordStorage = new WordStorageManager(); // Initialize word storage
@@ -41,14 +42,37 @@ export class TranslatorPage {
         };
     }
 
+    loadSavedPreferences() {
+        console.log('Loading saved preferences...');
+        // Load detailed mode preference
+        const savedDetailedMode = localStorage.getItem('detailedMode');
+        console.log('Saved detailed mode:', savedDetailedMode);
+        if (savedDetailedMode !== null) {
+            this.detailedMode.checked = savedDetailedMode === 'true';
+            console.log('Set detailed mode to:', this.detailedMode.checked);
+        }
+
+        // Load formality level preference (default to 'polite-informal' if not set)
+        const savedFormality = localStorage.getItem('formalityLevel') || 'polite-informal';
+        console.log('Saved formality:', savedFormality);
+        this.updateFormalitySelection(savedFormality, false);
+    }
+
     setupEventListeners() {
         // Translation events
         this.sendButton.addEventListener('click', () => this.handleTranslate());
         this.userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent new line
+                e.preventDefault();
                 this.handleTranslate();
             }
+        });
+
+        // Detailed mode toggle event
+        this.detailedMode.addEventListener('change', () => {
+            console.log('Detailed mode changed to:', this.detailedMode.checked);
+            localStorage.setItem('detailedMode', this.detailedMode.checked);
+            console.log('Saved to localStorage:', localStorage.getItem('detailedMode'));
         });
 
         // Formality modal events
@@ -59,7 +83,8 @@ export class TranslatorPage {
         this.formalityOptions.forEach(option => {
             option.addEventListener('click', () => {
                 const value = option.dataset.value;
-                this.updateFormalitySelection(value);
+                console.log('Formality option clicked:', value);
+                this.updateFormalitySelection(value, true);
                 this.closeFormalityModal();
             });
         });
@@ -474,10 +499,16 @@ export class TranslatorPage {
         document.body.style.overflow = '';
     }
 
-    updateFormalitySelection(value) {
+    updateFormalitySelection(value, saveToStorage = true) {
+        console.log('Updating formality selection:', value, 'saveToStorage:', saveToStorage);
         this.formalityLevel.value = value;
-        const selectedOption = Array.from(this.formalityLevel.options)
-            .find(option => option.value === value);
-        this.formalityLabel.textContent = selectedOption.textContent;
+        this.formalityLabel.textContent = value.split('-').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+        
+        if (saveToStorage) {
+            localStorage.setItem('formalityLevel', value);
+            console.log('Saved formality to localStorage:', localStorage.getItem('formalityLevel'));
+        }
     }
 } 

@@ -30,10 +30,20 @@ export class WordBankPage {
         this.wordList.style.display = 'none';
     }
 
+    formatFormalityLabel(formality) {
+        switch(formality) {
+            case 'casual': return 'Casual';
+            case 'polite-informal': return 'Polite';
+            case 'formal-polite': return 'Formal';
+            case 'very-formal': return 'Very Formal';
+            default: return formality;
+        }
+    }
+
     showWordList(words) {
         console.log('Showing word list with words:', words);
         this.emptyWordBank.style.display = 'none';
-        this.wordList.style.display = 'block';
+        this.wordList.style.display = 'grid';
 
         // Clear any existing content
         this.wordList.innerHTML = '';
@@ -43,16 +53,63 @@ export class WordBankPage {
             const tile = document.createElement('div');
             tile.className = 'word-tile';
 
-            const englishText = document.createElement('div');
-            englishText.className = 'word-english';
-            englishText.textContent = `${english} -> ${data.korean}`;
+            // Create header with English word
+            const header = document.createElement('h3');
+            header.className = 'word-english';
+            header.textContent = english;
+            tile.appendChild(header);
 
-            const formalityText = document.createElement('div');
-            formalityText.className = 'word-formality';
-            formalityText.textContent = `Formality Level: ${data.formality}`;
+            // Create translations list
+            const translationsList = document.createElement('ul');
+            translationsList.className = 'translations-list';
 
-            tile.appendChild(englishText);
-            tile.appendChild(formalityText);
+            // Sort translations by formality level
+            const sortedTranslations = [...data.translations].sort((a, b) => {
+                const formalityOrder = {
+                    'casual': 0,
+                    'polite-informal': 1,
+                    'formal-polite': 2,
+                    'very-formal': 3
+                };
+                return formalityOrder[a.formality] - formalityOrder[b.formality];
+            });
+
+            // Add each translation as a list item
+            sortedTranslations.forEach(translation => {
+                const listItem = document.createElement('li');
+                listItem.className = 'translation-item';
+                
+                const formalitySpan = document.createElement('span');
+                formalitySpan.className = 'translation-formality';
+                formalitySpan.textContent = this.formatFormalityLabel(translation.formality);
+                
+                const koreanSpan = document.createElement('span');
+                koreanSpan.className = 'translation-korean';
+                koreanSpan.textContent = translation.korean;
+                
+                listItem.appendChild(formalitySpan);
+                listItem.appendChild(document.createTextNode(': '));
+                listItem.appendChild(koreanSpan);
+                
+                translationsList.appendChild(listItem);
+            });
+
+            tile.appendChild(translationsList);
+
+            // Add tags below translations if they exist
+            if (data.tags && data.tags.length > 0) {
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'word-tags';
+                data.tags.forEach(tag => {
+                    const tagSpan = document.createElement('span');
+                    tagSpan.className = 'word-tag';
+                    // Capitalize the tag
+                    tagSpan.textContent = tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+                    tagsContainer.appendChild(tagSpan);
+                });
+                tile.appendChild(tagsContainer);
+            }
+
             this.wordList.appendChild(tile);
         });
     }
