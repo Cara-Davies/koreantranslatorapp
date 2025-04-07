@@ -204,12 +204,16 @@ nav {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .cta-button:hover {
     background-color: var(--secondary-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(198, 12, 48, 0.2);
+    color: var(--background-color);
+    text-decoration: none;
 }
 
 .hero-image {
