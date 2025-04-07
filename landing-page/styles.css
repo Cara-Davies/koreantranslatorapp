@@ -64,6 +64,16 @@ nav {
     border-radius: 4px;
 }
 
+.nav-links .nav-translator {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+.nav-links .nav-translator:hover {
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+}
+
 .nav-links a:hover {
     background-color: var(--hover-color);
     color: var(--primary-color);
